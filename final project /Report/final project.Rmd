@@ -1,0 +1,83 @@
+---
+title: "Simulation Report of Thresholding-based Iterative Selection Procedures for Model Selection and Shrinkage"
+author: "Huijuan Zhou, Lihao Yin, Tong Wang"
+output:
+   html_document:
+    mathjax: local
+    self_contained: false
+---
+##Iteration rules：
+$$\beta^{(j+1)}=\Theta((\boldsymbol{I}-\frac{1}{k_0^2}\boldsymbol{\Sigma})\beta^{(j)}+\frac{1}{k_0^2}X^Ty;\frac{\lambda}{k_0^2})$$
+where $\boldsymbol{\Sigma}=\boldsymbol{X}^T\boldsymbol{X}$, $\boldsymbol{X}$ is the standardized design matrix and $k_0=\mu_{\max}(\boldsymbol{X})=\rVert\boldsymbol{X}\rVert_2$ is max singular value of matrix $\boldsymbol{X}$. It makes the matrix $\boldsymbol{I}-\frac{1}{k_0^2}\boldsymbol{\Sigma}$ to be positive definte.
+
+We demonstrate the empirical performance of TISPs by some simulation data. In addition to the Soft-TISP, i.e., the lasso, we implemented Hard-TISP and SCAD-TISP, the thresholdings of which belong to the hard-thresholding family.
+
+* soft-threshold: $\Theta(x,\lambda)=sign(x)(|x|-\lambda)_+$
+* hard-threshold: $\Theta(x,\lambda)=xI_{[|x|>\lambda]}$
+* scad-threshold: $\Theta(x,\lambda)=\left\{
+\begin{aligned}
+&sign(x)(|x|-\lambda)_+\quad\quad\quad\quad\quad\qquad |x|<2\lambda \\
+&[(a-1)x-sign(x)a\lambda]/(a-2)\quad\quad 2\lambda\le|x|<a\lambda \\
+&x \quad \quad \quad \quad \quad \quad \quad \quad  \quad \quad \quad \quad \quad  others
+\end{aligned}
+\right.$
+
+##Data Generating and Parameter Setting:
+Let $\boldsymbol{\Sigma}$ be the correlation matrix in generating $\boldsymbol{X}$, i.e., each row of $\boldsymbol{X}$ is independently drawn from $N(0,\boldsymbol{\Sigma})$, where $\Sigma_{ij}=\rho^{|i-j|}$ with $\rho=0.5,0.85$. $\beta=(\{3\}^1,\{1.5\}^1,\{0\}^2,\{2\}^1,\{0\}^3)\quad\beta=(\{3\}^1,\{1.5\}^1,\{0\}^2,\{2\}^1,\{0\}^{95})$.$y=\boldsymbol{X}\beta+\epsilon$,$\epsilon\sim N(0,\sigma^2)$, we set $\sigma^2=4,16$.Sample size $n=20$
+
+###Penality Parameter Choosing:
+We choose penality parameter $\lambda$ by cross validation. 
+
+##Performance Criterion:
+
+* Mse:$\frac{1}{N}\sum_{i=1}^N(y_i-\hat{y_i})^2$
+* sparsit error:$|\{i:sgn(\hat{\beta_i})\neq sgn(\beta_i)\}|/d$
+* proper zero percentages:$|\{i:\beta_i=0,\hat{\beta_i}=0\}|/|\{i:\beta_i=0\}|$
+* proper nonzero percentages:$|\{i:\beta_i\neq0,\hat{\beta_i}\neq0\}|/|\{i:\beta_i\neq0\}|$
+
+##Results
+
+###Case 1 $p<n (p=8,n=20,runs=1000)$
+
+* 1($\rho=0.5,\sigma=2$)
+
+![](/Users/wt/Documents/22/8205.jpeg)
+
+* 2($\rho=0.85,\sigma=2$)
+
+![](/Users/wt/Documents/22/82085.jpeg)
+
+* 3($\rho=0.5,\sigma=8$)
+
+![](/Users/wt/Documents/22/8805.jpeg)
+
+
+* 4($\rho=0.85,\sigma=8$)
+
+![](/Users/wt/Documents/22/88085.jpeg)
+
+###Case 2 $p>n (p=100,n=20,runs=100)$
+
+* 1($\rho=0.5,\sigma=2$)
+
+![](/Users/wt/Documents/22/100205.jpeg)
+
+* 2($\rho=0.85,\sigma=2$)
+
+![](/Users/wt/Documents/22/1002085.jpeg)
+
+* 3($\rho=0.5,\sigma=8$)
+
+![](/Users/wt/Documents/22/100805.jpeg)
+
+* 4($\rho=0.85,\sigma=8$)
+
+![](/Users/wt/Documents/22/1008085.jpeg)
+
+##Results Analysis
+
+From out simulation results, when the noise level is low($\sigma=2$), the lasso(Soft-TISP) yields a more accurate estimate than the two. And when the noise level is relative high($\sigma=8$), the Hard-TISP has a better performance. Fix the noise level, the higher correlation of the design matrix, the worse performance of the three types of thresholds. And fix the signal level, the higher noise level, the worse performance of the three types of thresholds.
+
+##Files Introduction
+Code file contains codes for the three types thresholds and the R code that runs the Rcpp. Figures file contains outcome figures of the eight cases. Outcome file contains performance outcome tables of the eight cases and the estimates of $\beta$.
+
